@@ -80,6 +80,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\DBData.mdf" />
+    <Content Include="App_Data\DBData_log.ldf">
+      <DependentUpon>DBData.mdf</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -109,7 +113,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="bin\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
