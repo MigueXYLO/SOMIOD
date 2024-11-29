@@ -7,8 +7,8 @@ namespace SOMIOD.Models
 {
     public class Application
     {
-        public int id { get; set; }
-        public string name { get; set; }
-        public DateTime creation_datetime { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Creation_datetime { get; set; }
     }
 }
