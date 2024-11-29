@@ -1,39 +1,92 @@
-﻿using System;
+﻿using SOMIOD.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Xml.Linq;
 
 namespace SOMIOD.Controllers
 {
+    [RoutePrefix("api/somiod/applications")]
     public class ApplicationsController : ApiController
     {
-        // GET api/<controller>
-        public IEnumerable<string> Get()
+        private static List<Application> applications = new List<Application>();
+
+        // GET: List all applications or get details of a specific one
+        [HttpGet]
+        [Route("")]
+        public IHttpActionResult GetApplications([FromUri] string locate = null)
         {
-            return new string[] { "value1", "value2" };
+            if (locate == "application")
+            {
+                var appNames = applications.Select(a => a.Name).ToList();
+                var xml = new XElement("Applications", appNames.Select(name => new XElement("Application", name)));
+                return Ok(xml);
+            }
+            return BadRequest("Invalid locate parameter value");
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        [HttpGet]
+        [Route("{name}")]
+        public IHttpActionResult GetApplicationDetails(string name)
         {
-            return "value";
+            var app = applications.FirstOrDefault(a => a.Name == name);
+            if (app == null)
+                return NotFound();
+
+            var xml = new XElement("Application",
+                new XElement("Id", app.Id),
+                new XElement("Name", app.Name),
+                new XElement("CreationDateTime", app.CreationDateTime.ToString("o")));
+
+            return Ok(xml);
         }
 
-        // POST api/<controller>
-        public void Post([FromBody] string value)
+        // POST: Create a new application
+        [HttpPost]
+        [Route("")]
+        public IHttpActionResult CreateApplication([FromBody] Application newApp)
         {
+            if (applications.Any(a => a.Name == newApp.Name))
+                return Conflict();
+
+            newApp.Id = applications.Count + 1;
+            newApp.CreationDateTime = DateTime.UtcNow;
+
+            if (string.IsNullOrEmpty(newApp.Name))
+                newApp.Name = $"App{newApp.Id}";
+
+            applications.Add(newApp);
+
+            return Created(new Uri(Request.RequestUri, $"{newApp.Name}"), newApp);
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        // PUT: Update an application
+        [HttpPut]
+        [Route("{name}")]
+        public IHttpActionResult UpdateApplication(string name, [FromBody] Application updatedApp)
         {
+            var app = applications.FirstOrDefault(a => a.Name == name);
+            if (app == null)
+                return NotFound();
+
+            app.Name = updatedApp.Name;
+            return StatusCode(System.Net.HttpStatusCode.NoContent);
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        // DELETE: Delete an application
+        [HttpDelete]
+        [Route("{name}")]
+        public IHttpActionResult DeleteApplication(string name)
         {
+            var app = applications.FirstOrDefault(a => a.Name == name);
+            if (app == null)
+                return NotFound();
+
+            applications.Remove(app);
+            return StatusCode(System.Net.HttpStatusCode.NoContent);
         }
     }
 }
