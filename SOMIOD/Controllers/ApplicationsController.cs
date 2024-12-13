@@ -9,19 +9,24 @@ using System.Xml.Linq;
 
 namespace SOMIOD.Controllers
 {
-    [RoutePrefix("api/somiod/applications")]
+    [RoutePrefix("api/somiod/application")]
     public class ApplicationsController : ApiController
     {
-        private static List<Application> applications = new List<Application>();
+        private readonly AppDbContext _context;
 
-        // GET: List all applications or get details of a specific one
+        public ApplicationsController()
+        {
+            _context = new AppDbContext(); 
+        }
+
+        
         [HttpGet]
         [Route("")]
-        public IHttpActionResult GetApplications([FromUri] string locate = null)
+        public async Task<IHttpActionResult> GetApplications([FromUri] string locate = null)
         {
             if (locate == "application")
             {
-                var appNames = applications.Select(a => a.Name).ToList();
+                var appNames = await _context.Applications.Select(a => a.Name).ToListAsync();
                 var xml = new XElement("Applications", appNames.Select(name => new XElement("Application", name)));
                 return Ok(xml);
             }
@@ -30,9 +35,9 @@ namespace SOMIOD.Controllers
 
         [HttpGet]
         [Route("{name}")]
-        public IHttpActionResult GetApplicationDetails(string name)
+        public async Task<IHttpActionResult> GetApplicationDetails(string name)
         {
-            var app = applications.FirstOrDefault(a => a.Name == name);
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Name == name);
             if (app == null)
                 return NotFound();
 
@@ -44,49 +49,70 @@ namespace SOMIOD.Controllers
             return Ok(xml);
         }
 
-        // POST: Create a new application
+        
         [HttpPost]
         [Route("")]
-        public IHttpActionResult CreateApplication([FromBody] Application newApp)
+        public async Task<IHttpActionResult> CreateApplication([FromBody] Application newApp)
         {
-            if (applications.Any(a => a.Name == newApp.Name))
+            if (await _context.Applications.AnyAsync(a => a.Name == newApp.Name))
                 return Conflict();
 
-            newApp.Id = applications.Count + 1;
             newApp.CreationDateTime = DateTime.UtcNow;
 
             if (string.IsNullOrEmpty(newApp.Name))
-                newApp.Name = $"App{newApp.Id}";
+                newApp.Name = $"Application_{Guid.NewGuid()}";
 
-            applications.Add(newApp);
+            _context.Applications.Add(newApp);
+            await _context.SaveChangesAsync();
 
             return Created(new Uri(Request.RequestUri, $"{newApp.Name}"), newApp);
         }
 
-        // PUT: Update an application
+        
         [HttpPut]
         [Route("{name}")]
-        public IHttpActionResult UpdateApplication(string name, [FromBody] Application updatedApp)
+        public async Task<IHttpActionResult> UpdateApplication(string name, [FromBody] Application updatedApp)
         {
-            var app = applications.FirstOrDefault(a => a.Name == name);
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Name == name);
             if (app == null)
                 return NotFound();
 
             app.Name = updatedApp.Name;
+            await _context.SaveChangesAsync();
+
             return StatusCode(System.Net.HttpStatusCode.NoContent);
         }
 
-        // DELETE: Delete an application
+        
         [HttpDelete]
         [Route("{name}")]
-        public IHttpActionResult DeleteApplication(string name)
+        public async Task<IHttpActionResult> DeleteApplication(string name)
         {
-            var app = applications.FirstOrDefault(a => a.Name == name);
+            var app = await _context.Applications.FirstOrDefaultAsync(a => a.Name == name);
             if (app == null)
                 return NotFound();
 
-            applications.Remove(app);
+            _context.Applications.Remove(app);
+            await _context.SaveChangesAsync();
+
             return StatusCode(System.Net.HttpStatusCode.NoContent);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _context.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext() : base("name=DBData") { }
+
+        public DbSet<Application> Applications { get; set; }
+    }
+
+
 }
