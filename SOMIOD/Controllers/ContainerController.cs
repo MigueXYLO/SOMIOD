@@ -15,7 +15,7 @@ namespace SOMIOD.Controllers
 
         public ContainersController()
         {
-            _context = new AppDbContext(); // Initializes the database context
+            _context = new AppDbContext(); 
         }
 
         
