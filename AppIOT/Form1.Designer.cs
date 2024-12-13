@@ -36,20 +36,23 @@
             this.btnCreateContainer = new System.Windows.Forms.Button();
             this.txtBoxMosquitto = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.btnSetUrl = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtBoxUrl = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // txtBoxNomeSensor
             // 
-            this.txtBoxNomeSensor.Location = new System.Drawing.Point(117, 25);
+            this.txtBoxNomeSensor.Location = new System.Drawing.Point(198, 109);
             this.txtBoxNomeSensor.Name = "txtBoxNomeSensor";
-            this.txtBoxNomeSensor.Size = new System.Drawing.Size(100, 22);
+            this.txtBoxNomeSensor.Size = new System.Drawing.Size(202, 22);
             this.txtBoxNomeSensor.TabIndex = 0;
             this.txtBoxNomeSensor.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(118, 13);
+            this.label1.Location = new System.Drawing.Point(199, 97);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 16);
             this.label1.TabIndex = 1;
@@ -59,7 +62,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 13);
+            this.label3.Location = new System.Drawing.Point(13, 97);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(75, 16);
             this.label3.TabIndex = 6;
@@ -67,16 +70,17 @@
             // 
             // txtBoxAppName
             // 
-            this.txtBoxAppName.Location = new System.Drawing.Point(12, 25);
+            this.txtBoxAppName.Location = new System.Drawing.Point(12, 109);
             this.txtBoxAppName.Name = "txtBoxAppName";
-            this.txtBoxAppName.Size = new System.Drawing.Size(100, 22);
+            this.txtBoxAppName.Size = new System.Drawing.Size(180, 22);
             this.txtBoxAppName.TabIndex = 5;
             // 
             // btnCreateApp
             // 
-            this.btnCreateApp.Location = new System.Drawing.Point(12, 53);
+            this.btnCreateApp.Enabled = false;
+            this.btnCreateApp.Location = new System.Drawing.Point(12, 137);
             this.btnCreateApp.Name = "btnCreateApp";
-            this.btnCreateApp.Size = new System.Drawing.Size(100, 32);
+            this.btnCreateApp.Size = new System.Drawing.Size(180, 32);
             this.btnCreateApp.TabIndex = 7;
             this.btnCreateApp.Text = "Criar App";
             this.btnCreateApp.UseVisualStyleBackColor = true;
@@ -85,9 +89,9 @@
             // btnCreateContainer
             // 
             this.btnCreateContainer.Enabled = false;
-            this.btnCreateContainer.Location = new System.Drawing.Point(117, 53);
+            this.btnCreateContainer.Location = new System.Drawing.Point(198, 137);
             this.btnCreateContainer.Name = "btnCreateContainer";
-            this.btnCreateContainer.Size = new System.Drawing.Size(100, 32);
+            this.btnCreateContainer.Size = new System.Drawing.Size(202, 32);
             this.btnCreateContainer.TabIndex = 8;
             this.btnCreateContainer.Text = "Criar Luz";
             this.btnCreateContainer.UseVisualStyleBackColor = true;
@@ -95,27 +99,57 @@
             // 
             // txtBoxMosquitto
             // 
-            this.txtBoxMosquitto.Location = new System.Drawing.Point(12, 113);
+            this.txtBoxMosquitto.Location = new System.Drawing.Point(12, 197);
             this.txtBoxMosquitto.Multiline = true;
             this.txtBoxMosquitto.Name = "txtBoxMosquitto";
             this.txtBoxMosquitto.ReadOnly = true;
-            this.txtBoxMosquitto.Size = new System.Drawing.Size(205, 159);
+            this.txtBoxMosquitto.Size = new System.Drawing.Size(388, 159);
             this.txtBoxMosquitto.TabIndex = 9;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 94);
+            this.label2.Location = new System.Drawing.Point(13, 178);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(108, 16);
             this.label2.TabIndex = 10;
             this.label2.Text = "ReceivedValues";
             // 
+            // btnSetUrl
+            // 
+            this.btnSetUrl.Location = new System.Drawing.Point(12, 52);
+            this.btnSetUrl.Name = "btnSetUrl";
+            this.btnSetUrl.Size = new System.Drawing.Size(388, 32);
+            this.btnSetUrl.TabIndex = 13;
+            this.btnSetUrl.Text = "Definir Url Base";
+            this.btnSetUrl.UseVisualStyleBackColor = true;
+            this.btnSetUrl.Click += new System.EventHandler(this.btnSetUrl_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(13, 12);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 16);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Url Base:";
+            // 
+            // txtBoxUrl
+            // 
+            this.txtBoxUrl.Location = new System.Drawing.Point(12, 24);
+            this.txtBoxUrl.Name = "txtBoxUrl";
+            this.txtBoxUrl.Size = new System.Drawing.Size(388, 22);
+            this.txtBoxUrl.TabIndex = 11;
+            this.txtBoxUrl.Text = "http://localhost:44392/api/somiod/";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(233, 292);
+            this.ClientSize = new System.Drawing.Size(412, 365);
+            this.Controls.Add(this.btnSetUrl);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtBoxUrl);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtBoxMosquitto);
             this.Controls.Add(this.btnCreateContainer);
@@ -141,6 +175,9 @@
         private System.Windows.Forms.Button btnCreateContainer;
         private System.Windows.Forms.TextBox txtBoxMosquitto;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnSetUrl;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtBoxUrl;
     }
 }
 

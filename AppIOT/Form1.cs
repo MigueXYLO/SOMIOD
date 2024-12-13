@@ -14,8 +14,8 @@ namespace AppIOT
 {
     public partial class Form1 : Form
     {
-        //TODO : Change the base_url to the correct URL
-        private string base_url = "http://localhost:44392/api/somiod/";
+        // TODO: Alterar para o URL correto
+        private string base_url;
         private string appName;
         private string containerName;
 
@@ -39,63 +39,44 @@ namespace AppIOT
 
         }
 
-        private void btnCreateApp_Click(object sender, EventArgs e)
+        private async void btnCreateApp_Click(object sender, EventArgs e)
         {
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(base_url);
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-            //Create the object
-            //Send the request to base_url using post and a XML object as the body
-            //Get the response and show it in the textbox
+            XmlDocument doc = CreateXmlDocument("application", txtBoxAppName.Text);
 
-            //XML format
-            /*
-            <application>
-                <name>name</name>
-                <id>**</id>
-                <description>description</description>
-            </application>
-             */
+            StringContent content = new StringContent(doc.OuterXml, Encoding.UTF8, "application/xml");
 
+            string response = await SendHttpRequestAsync(client, base_url, content);
+
+            if (response != null)
+            {
+                appName = txtBoxAppName.Text;
+                btnCreateContainer.Enabled = true;
+                txtBoxMosquitto.Text = response;
+            }
+        }
+
+        private XmlDocument CreateXmlDocument(string rootName, string name)
+        {
             XmlDocument doc = new XmlDocument();
             XmlNode docNode = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
             doc.AppendChild(docNode);
 
-            XmlNode appNode = doc.CreateElement("application");
-            doc.AppendChild(appNode);
+            XmlNode rootNode = doc.CreateElement(rootName);
+            doc.AppendChild(rootNode);
 
             XmlNode nameNode = doc.CreateElement("name");
-            nameNode.AppendChild(doc.CreateTextNode(txtBoxAppName.Text));
-            appNode.AppendChild(nameNode);
+            nameNode.AppendChild(doc.CreateTextNode(name));
+            rootNode.AppendChild(nameNode);
 
             XmlNode idNode = doc.CreateElement("id");
             idNode.AppendChild(doc.CreateTextNode("0"));
-            appNode.AppendChild(idNode);
+            rootNode.AppendChild(idNode);
 
-            XmlNode descNode = doc.CreateElement("description");
-            descNode.AppendChild(doc.CreateTextNode("description"));
-            appNode.AppendChild(descNode);
-
-            //Convert the XML to send it via POST
-            StringContent content = new StringContent(doc.OuterXml, Encoding.UTF8, "application/xml");
-
-            //Send the request
-            HttpResponseMessage response = client.PostAsync(base_url,content).Result;
-
-            //req will contain the request and the response
-            string req = response.RequestMessage + Environment.NewLine + response.Content.ReadAsStringAsync().Result;
-
-            //Show the response
-            txtBoxMosquitto.Text = req;
-
-            //if response is OK, extra url is the name of the app and activate the button to create a container
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                appName = txtBoxAppName.Text;
-                btnCreateContainer.Enabled = true;
-            }
-
+            return doc;
         }
 
         private void btnCreateContainer_Click(object sender, EventArgs e)
@@ -103,19 +84,6 @@ namespace AppIOT
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(base_url + appName + "/");
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
-
-            //Create the object
-            //Send the request to base_url using post and a XML object as the body
-            //Get the response and show it in the textbox
-
-            //XML format
-            /*
-                <container>
-                    <name>name</name>
-                    <id>**</id>
-                    <description>description</description>
-                </container>
-             */
 
             XmlDocument doc = new XmlDocument();
             XmlNode docNode = doc.CreateXmlDeclaration("1.0", "UTF-8", null);
@@ -130,35 +98,24 @@ namespace AppIOT
 
             XmlNode idNode = doc.CreateElement("id");
             idNode.AppendChild(doc.CreateTextNode("0"));
-
             appNode.AppendChild(idNode);
 
             XmlNode descNode = doc.CreateElement("description");
             descNode.AppendChild(doc.CreateTextNode("description"));
-
             appNode.AppendChild(descNode);
-            doc.AppendChild(docNode);
 
-
-            //Convert the XML to send it via POST
             StringContent content = new StringContent(doc.OuterXml, Encoding.UTF8, "application/xml");
 
-            //Send the request
             HttpResponseMessage response = client.PostAsync(base_url + appName + "/", content).Result;
 
-            //req will contain the request and the response
             string req = response.RequestMessage + Environment.NewLine + response.Content.ReadAsStringAsync().Result;
 
-            //Show the response
             txtBoxMosquitto.Text = req;
 
-            //if response is OK, extra url is the name of the app/sensor
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 containerName = txtBoxNomeSensor.Text;
             }
-
-
         }
 
         private async void SubscribeToNotifications(string endpoint)
@@ -184,7 +141,6 @@ namespace AppIOT
 
                 string xml = doc.OuterXml;
 
-
                 HttpContent content = new StringContent(xml, Encoding.UTF8, "application/xml");
                 HttpResponseMessage response = await client.PostAsync(url, content);
 
@@ -199,7 +155,30 @@ namespace AppIOT
             }
         }
 
+        private async Task<string> SendHttpRequestAsync(HttpClient client, string endpoint, StringContent content)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.PostAsync(endpoint, content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"HTTP Error {response.StatusCode}: {error}");
+                }
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}");
+                return null;
+            }
+        }
 
+        private void btnSetUrl_Click(object sender, EventArgs e)
+        {
+            base_url = txtBoxUrl.Text;
+            btnCreateApp.Enabled = true;
+            MessageBox.Show("Base URL saved successfully!");
+        }
     }
-
 }
