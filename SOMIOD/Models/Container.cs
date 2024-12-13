@@ -11,5 +11,7 @@ namespace SOMIOD.Models
         public string Name { get; set; }
         public DateTime Creation_datetime { get; set; }
         public int Parent { get; set; }
+
+        public virtual Application Application { get; set; }
     }
 }
