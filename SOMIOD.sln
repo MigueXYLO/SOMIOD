@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SOMIOD", "SOMIOD\SOMIOD.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppIOT", "AppIOT\AppIOT.csproj", "{864BFC74-E985-453F-9E18-35750FC8E889}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppTester", "AppTester\AppTester.csproj", "{116E7065-C181-4FFB-910D-1BC835618E09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{864BFC74-E985-453F-9E18-35750FC8E889}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{864BFC74-E985-453F-9E18-35750FC8E889}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{864BFC74-E985-453F-9E18-35750FC8E889}.Release|Any CPU.Build.0 = Release|Any CPU
+		{116E7065-C181-4FFB-910D-1BC835618E09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{116E7065-C181-4FFB-910D-1BC835618E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{116E7065-C181-4FFB-910D-1BC835618E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{116E7065-C181-4FFB-910D-1BC835618E09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
