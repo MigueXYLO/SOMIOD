@@ -41,21 +41,36 @@ namespace AppIOT
 
         private async void btnCreateApp_Click(object sender, EventArgs e)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(base_url);
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
-
-            XmlDocument doc = CreateXmlDocument("application", txtBoxAppName.Text);
-
-            StringContent content = new StringContent(doc.OuterXml, Encoding.UTF8, "application/xml");
-
-            string response = await SendHttpRequestAsync(client, base_url, content);
-
-            if (response != null)
+            if (string.IsNullOrWhiteSpace(txtBoxAppName.Text))
             {
-                appName = txtBoxAppName.Text;
-                btnCreateContainer.Enabled = true;
-                txtBoxMosquitto.Text = response;
+                MessageBox.Show("Application name cannot be empty.");
+                return;
+            }
+
+            try
+            {
+                HttpClient client = new HttpClient
+                {
+                    BaseAddress = new Uri(base_url)
+                };
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+
+                XmlDocument doc = CreateXmlDocument("application", txtBoxAppName.Text);
+                StringContent content = new StringContent(doc.OuterXml, Encoding.UTF8, "application/xml");
+
+                string response = await SendHttpRequestAsync(client, "api/somiod/application/", content);
+
+                if (!string.IsNullOrEmpty(response))
+                {
+                    appName = txtBoxAppName.Text;
+                    btnCreateContainer.Enabled = true;
+                    txtBoxMosquitto.Text = response;
+                    MessageBox.Show("Application created successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating application: {ex.Message}");
             }
         }
 
@@ -71,10 +86,6 @@ namespace AppIOT
             XmlNode nameNode = doc.CreateElement("name");
             nameNode.AppendChild(doc.CreateTextNode(name));
             rootNode.AppendChild(nameNode);
-
-            XmlNode idNode = doc.CreateElement("id");
-            idNode.AppendChild(doc.CreateTextNode("0"));
-            rootNode.AppendChild(idNode);
 
             return doc;
         }
@@ -179,6 +190,11 @@ namespace AppIOT
             base_url = txtBoxUrl.Text;
             btnCreateApp.Enabled = true;
             MessageBox.Show("Base URL saved successfully!");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
